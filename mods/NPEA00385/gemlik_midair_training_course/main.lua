@@ -1,3 +1,9 @@
+function FreezeMover(moby, still_moby)
+	local trigger = Ratchetron:ReadMemory(GAME_PID, still_moby.pvars + 0xb0, 8)
+	Ratchetron:WriteMemory(GAME_PID, moby.pvars + 0xb0, 8, trigger)
+	moby.state = 1
+end
+
 function MoveGemlikThings()
 	moby = Moby:findFirst(0xb6)
 
@@ -16,26 +22,37 @@ function MoveGemlikThings()
 	moby.rotation_x = 1.58
 	moby.scale = 1.9
 	
-	moby = Moby:findFirst(0x6a)
-	
-	moby.x = 338.66586303711
-	moby.y = 511.99465942383
-	moby.z = 313.5
-	moby.rotation_z = -1.05
-	moby.scale = 1.5
+	local step_x = 388.14318847656 - 338.66586303711
+	local step_y = 535.12243652344 - 511.99465942383
 
-	moby = Moby:findFirst(0x68)
+	local mobies_6a = Moby:findAll(0x6a)
+	local mobies_68 = Moby:findAll(0x68)
 
-	moby.x = 388.14318847656
-	moby.y = 535.12243652344
-	moby.z = 313.41269165039
-	moby.rotation_z = -1.1
-	moby.scale = 1.5
+	FreezeMover(mobies_6a[2], mobies_6a[1])
+	FreezeMover(mobies_68[2], mobies_68[1])
+
+	for i = 1, 2 do
+		local offset = (i - 1) * 2
+
+		moby = mobies_6a[i]
+		moby.x = 338.66586303711 + step_x * offset
+		moby.y = 511.99465942383 + step_y * offset
+		moby.z = 313.5
+		moby.rotation_z = -1.05
+		moby.scale = 1.5
+
+		moby = mobies_68[i]
+		moby.x = 388.14318847656 + step_x * offset
+		moby.y = 535.12243652344 + step_y * offset
+		moby.z = 313.41269165039
+		moby.rotation_z = -1.1
+		moby.scale = 1.5
+	end
 end
 
 function MoveRatchet()
-	ratchet.x = 388.14318847656
-	ratchet.y = 535.12243652344
+	ratchet.x = 388.14318847656 + (388.14318847656 - 338.66586303711) * 2
+	ratchet.y = 535.12243652344 + (535.12243652344 - 511.99465942383) * 2
 	ratchet.z = 319.41269165039
 end
 
